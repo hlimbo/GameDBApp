@@ -17,7 +17,7 @@
             </intent-filter>
         </activity>
         <!-- implement back button within app -->
-        <activity android:name=".SuccessfulLoginActivity" android:parentActivityName=".LoginActivity">
+        <activity android:name=".SearchActivity" android:parentActivityName=".LoginActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".LoginActivity" />

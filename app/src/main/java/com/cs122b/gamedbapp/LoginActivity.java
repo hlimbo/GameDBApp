@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         String full_url = base_url + path + "?email=" + email + "&password=" + password;
 
         final Context context = this;
-        final Intent intent = new Intent(context, SuccessfulLoginActivity.class);
+        final Intent intent = new Intent(context, SearchActivity.class);
         RequestQueue queue = Volley.newRequestQueue(context);
 
         Log.d("INFO",full_url);

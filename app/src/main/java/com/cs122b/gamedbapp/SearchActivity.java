@@ -3,11 +3,11 @@ package com.cs122b.gamedbapp;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class SuccessfulLoginActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_successful_login);
+        setContentView(R.layout.activity_search);
     }
 }
