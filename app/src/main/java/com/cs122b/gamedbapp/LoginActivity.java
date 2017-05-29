@@ -71,10 +71,6 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(String response)
                     {
                         Log.d("RESPONSE",response);
-
-                        //TODO(HARVEY): Move Error output towards top of  page.
-                        //TODO(HARVEY): put keyboard down login button tapped.
-
                         LoginXMLParser loginParser = new LoginXMLParser();
 
                         try
