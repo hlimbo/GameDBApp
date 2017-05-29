@@ -11,18 +11,20 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by Harvey on 5/28/2017.
+ * Created by Harvey on 5/29/2017.
  */
 
-public class LoginXMLParser {
-    //no namespaces
+public class SearchXMLParser
+{
+    //namespace string
     private static final String ns = null;
 
-    //returns a map of key-value pairs in the xml file
-    //e.g. map["status"] returns the value "failure" if email password entered in is invalid.
-    public Map parse(String xmlString) throws XmlPullParserException, IOException
+    //returns a list of games retrieved from xml file.
+    public List parse(String xmlString) throws XmlPullParserException, IOException
     {
         //convert xmlString output to InputStream object
         InputStream in = new ByteArrayInputStream(xmlString.getBytes(Charset.forName("UTF-8")));
@@ -32,34 +34,37 @@ public class LoginXMLParser {
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
             parser.setInput(in, null);
             parser.nextTag();
-            return readLoginStatus(parser);
+            return readXML(parser);
         } finally {
             in.close();
         }
 
     }
 
-    private Map readLoginStatus(XmlPullParser parser) throws XmlPullParserException, IOException
+    //TODO(HARVEY): handle xml parsing up to 4 levels of depth to access game name.
+    //<search_results>
+    //      <row class="games_row">
+    //          <field class="games_name">
+    //                  <a>
+    //                      <atext> NAME OF GAME HERE....
+
+    //I have to go into 4 levels of depth to access the name of the game... this will take some time.
+
+    private List readXML(XmlPullParser parser) throws XmlPullParserException, IOException
     {
-        Map entries = new HashMap<String, String>();
-        parser.require(XmlPullParser.START_TAG, ns, "login_status");
+        List entries = new ArrayList<String>();
+        parser.require(XmlPullParser.START_TAG, ns, "search_results");
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
             }
 
             String name = parser.getName();
-            if (name.equals("status_code"))
+            //could introduce bugs since atext is used for names other than game name.
+            //e.g. platform name <atext>GB</atext>
+            if (name.equals("atext"))
             {
-                entries.put("status_code",this.readTextValue(parser));
-            }
-            else if(name.equals("status"))
-            {
-                entries.put("status",this.readTextValue(parser));
-            }
-            else if(name.equals("message"))
-            {
-                entries.put("message",this.readTextValue(parser));
+                entries.add(this.readTextValue(parser));
             }
             else
             {

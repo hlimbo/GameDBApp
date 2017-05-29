@@ -3,4 +3,5 @@
     <string name="email_example">email</string>
     <string name="password_example">password</string>
     <string name="loginButton">login</string>
+    <string name="search_hint">Search games</string>
 </resources>
