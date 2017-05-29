@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Xml;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -41,8 +42,13 @@ public class LoginActivity extends AppCompatActivity {
     //Used when Login button is tapped
     public void onLoginClick(View view)
     {
-        EditText emailText = (EditText) this.findViewById(R.id.email);
-        EditText passwordText = (EditText) this.findViewById(R.id.password);
+        //hide keyboard on login button press
+        InputMethodManager inputManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+
+        final EditText emailText = (EditText) this.findViewById(R.id.email);
+        final EditText passwordText = (EditText) this.findViewById(R.id.password);
+        final TextView errorView = (TextView) this.findViewById(R.id.textView);
 
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
@@ -53,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         String full_url = base_url + path + "?email=" + email + "&password=" + password;
 
         final Context context = this;
-        Intent intent = new Intent(context, SuccessfulLoginActivity.class);
+        final Intent intent = new Intent(context, SuccessfulLoginActivity.class);
         RequestQueue queue = Volley.newRequestQueue(context);
 
         Log.d("INFO",full_url);
@@ -65,22 +71,27 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(String response)
                     {
                         Log.d("RESPONSE",response);
-                        TextView  errorView = (TextView) findViewById(R.id.textView);
-                        //TODO(HARVEY): Return error output if login not successful
-                        //TODO(HARVEY): parse xml string response
+
+                        //TODO(HARVEY): Move Error output towards top of  page.
+                        //TODO(HARVEY): put keyboard down login button tapped.
+
                         LoginXMLParser loginParser = new LoginXMLParser();
 
                         try
                         {
                             Map contents = loginParser.parse(response);
 
-                            //Log.d("StatusCode",contents.get("status_code").toString());
-
                             //if login not successful print out error message
-                            String error_msg = contents.get("message").toString();
-                            if(error_msg != null && !contents.get("status_code").equals("1"))
+                            if(!contents.get("status_code").equals("1"))
                             {
+                                String error_msg = contents.get("message").toString();
                                 errorView.setText(error_msg);
+                                emailText.setText("");
+                                passwordText.setText("");
+                            }
+                            else//otherwise go to success page
+                            {
+                                startActivity(intent);
                             }
 
                         }
@@ -100,7 +111,6 @@ public class LoginActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error)
                     {
                         Log.d("SECURITY.ERROR",error.toString());
-                        TextView  errorView = (TextView) findViewById(R.id.textView);
                         errorView.setText("ERROR: Website is down");
                     }
                 }
