@@ -94,7 +94,8 @@ public class SearchableActivity extends ListActivity {
         listView = getListView();
         if(!searchResults.isEmpty())
         {
-            pageView.setText(pageIndex.toString());
+            Integer pageNumber = pageIndex + 1;
+            pageView.setText("Page: " + pageNumber.toString());
 
             //display search results
             listView.setVisibility(View.VISIBLE);

@@ -18,13 +18,7 @@
             </intent-filter>
         </activity>
         <!-- implement back button within app -->
-        <activity
-            android:name=".SearchActivity"
-            android:parentActivityName=".LoginActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".LoginActivity" />
-        </activity>
+        <activity android:name=".SearchActivity"></activity>
 
         <activity android:name=".SearchableActivity">
             <intent-filter>
