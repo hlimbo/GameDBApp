@@ -49,6 +49,8 @@ public class SearchActivity extends AppCompatActivity {
         //search results limit per page
         Integer limit = 50;
 
+
+        name = name.replaceAll("\\s","+");
         String base_url = "http://" + constants.IP + ":" + constants.HTTP_PORT;
         String path = "/search/xquery";
         String full_url = base_url + path + "?match=" + match + "&name=" + name + "&offset=" + offset + "&limit=" + limit;
