@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -40,6 +41,7 @@ public class SearchableActivity extends ListActivity {
         ArrayList<? extends Parcelable> searchResults = bundle.getParcelableArrayList(SearchActivity.SEARCH);
         nextButton = (Button) this.findViewById(R.id.nextButton);
         prevButton = (Button) this.findViewById(R.id.prevButton);
+        TextView textView3 = (TextView)this.findViewById(R.id.textView3);
 
         pageIndex = 0;
         size = searchResults.size();
@@ -48,8 +50,9 @@ public class SearchableActivity extends ListActivity {
         masterList = searchResults.toArray(new String[size]);
 
         //create a list of sub results to show
-        String[] list = new String[resultsPerPage];
-        for(int i = 0;i < resultsPerPage;++i)
+        Integer subSize = size < resultsPerPage ? size : resultsPerPage;
+        String[] list = new String[subSize];
+        for(int i = 0;i < subSize;++i)
         {
             int offset = (pageIndex * resultsPerPage) + i;
             list[i] = masterList[offset];
@@ -68,10 +71,11 @@ public class SearchableActivity extends ListActivity {
         else
         {
             listView.setVisibility(View.INVISIBLE);
+            textView3.setText("NO SEARCH RESULTS");
         }
 
         //if there are too few results hide and disable next and previous buttons
-        if(pages == 0)
+        if(pages == 0 || pages == 1)
         {
             nextButton.setVisibility(View.INVISIBLE);
             prevButton.setVisibility(View.INVISIBLE);

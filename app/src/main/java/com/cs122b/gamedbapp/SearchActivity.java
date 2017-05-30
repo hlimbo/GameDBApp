@@ -51,11 +51,11 @@ public class SearchActivity extends AppCompatActivity {
         //MYSQL offset used for pagination
         Integer offset = 0;
         //search results limit per page
-        Integer limit = 50;
+        //Integer limit = 50;
 
         String base_url = "http://" + constants.IP + ":" + constants.HTTP_PORT;
         String path = "/search/xquery";
-        String full_url = base_url + path + "?match=" + match + "&name=" + name + "&offset=" + offset + "&limit=" + limit;
+        String full_url = base_url + path + "?match=" + match + "&name=" + name + "&offset=" + offset + "&limit=";// + limit;
 
         final Context context = this;
         RequestQueue queue = Volley.newRequestQueue(context);
