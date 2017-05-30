@@ -1,5 +1,6 @@
 package XMLParser;
 
+import android.util.Log;
 import android.util.Xml;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -24,7 +25,7 @@ public class SearchXMLParser
     private static final String ns = null;
 
     //returns a list of games retrieved from xml file.
-    public List parse(String xmlString) throws XmlPullParserException, IOException
+    public ArrayList<String> parse(String xmlString) throws XmlPullParserException, IOException
     {
         //convert xmlString output to InputStream object
         InputStream in = new ByteArrayInputStream(xmlString.getBytes(Charset.forName("UTF-8")));
@@ -50,29 +51,143 @@ public class SearchXMLParser
 
     //I have to go into 4 levels of depth to access the name of the game... this will take some time.
 
-    private List readXML(XmlPullParser parser) throws XmlPullParserException, IOException
+    private ArrayList<String> readXML(XmlPullParser parser) throws XmlPullParserException, IOException
     {
-        List entries = new ArrayList<String>();
-        parser.require(XmlPullParser.START_TAG, ns, "search_results");
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                continue;
+        ArrayList<String> entries = new ArrayList<String>();
+       parser.require(XmlPullParser.START_TAG, ns, "search_results");
+        while (parser.getEventType() != XmlPullParser.END_DOCUMENT)
+        {
+            switch (parser.getEventType())
+            {
+                case XmlPullParser.START_TAG:
+                    Log.d("XML", "header tag: " + parser.getName());
+                    if (parser.getName().equals("row"))
+                    {
+                        Log.d("XML1",parser.getName());
+                        if (parser.getAttributeCount() > 0 && parser.getAttributeValue(ns, "class").equals("games_row"))
+                        {
+                            Log.d("XML2",parser.getAttributeValue(ns,"class"));
+                            this.handleFields(parser,entries);
+                        }
+                    }
+                    break;
+                case XmlPullParser.END_TAG:
+                    Log.d("XML", "footer tag: " + parser.getName());
+                    break;
+                case XmlPullParser.TEXT:
+                    Log.d("XML", "text: " + parser.getText());
+                    break;
             }
 
-            String name = parser.getName();
-            //could introduce bugs since atext is used for names other than game name.
-            //e.g. platform name <atext>GB</atext>
-            if (name.equals("atext"))
-            {
-                entries.add(this.readTextValue(parser));
-            }
-            else
-            {
-                skip(parser);
-            }
+            parser.next();
+
         }
 
         return entries;
+    }
+
+    private void handleFields(XmlPullParser parser,ArrayList<String> entries) throws XmlPullParserException, IOException
+    {
+        Integer relativeDepth = parser.getDepth();
+        Integer currentDepth = relativeDepth;
+        //throws an XmlPullParserException if the header tag type does not match <row>
+        parser.require(XmlPullParser.START_TAG,ns,"row");
+        Log.d("fields", parser.getName());
+
+        Log.d("REL_DEPTH",relativeDepth.toString());
+        parser.nextTag();
+        currentDepth = parser.getDepth();
+        while(currentDepth != relativeDepth)
+        {
+            if(parser.getName() == null || parser.getName().equals("fields") && parser.getEventType() == XmlPullParser.END_TAG)
+            {
+                break;
+            }
+
+            Log.d("CurrentDepth",currentDepth.toString());
+            Log.d("fields2", parser.getName());
+
+            String classname = parser.getAttributeValue(ns,"class");
+
+            if(classname != null)
+            {
+                if (classname.equals("games_year"))
+                {
+                    parser.next();//fields text
+                    Log.d("YEAR", parser.getText());
+                }
+                else if (classname.equals("games_price"))
+                {
+                    parser.next();//fields text
+                    Log.d("PRICE", parser.getText());
+                }
+                else if (classname.equals("games_name"))
+                {
+                    Log.d("GAME", "games_name header");
+                    String gameName = this.retrieveGameName(parser);
+                    if(gameName != null)
+                    {
+                        Log.d("GAME-NAME", gameName);
+                        entries.add(gameName);
+                    }
+                    else
+                        Log.d("GAMERROR", "NULL");
+                }
+            }
+
+            parser.next();//fields footer
+            currentDepth = parser.getDepth();
+        }
+
+
+    }
+
+    private String retrieveGameName(XmlPullParser parser) throws XmlPullParserException, IOException
+    {
+        Integer relativeDepth = parser.getDepth();
+        Integer currentDepth = relativeDepth;
+
+        String gameName = "";
+        parser.require(XmlPullParser.START_TAG,ns,"field");
+        parser.next();//a header
+        parser.next();//href header
+        parser.next();//href text
+        parser.next();//href footer
+        parser.next();//atext header
+        parser.next();//atext text
+
+        gameName = parser.getText();
+
+        parser.next();//atext footer
+        parser.next();//a footer
+
+        return gameName;
+    }
+
+    //returns true if any whitespace was skipped, false otherwise ~ BROKEN METHOD
+    private boolean skipWhitespace(XmlPullParser parser) throws XmlPullParserException, IOException
+    {
+        boolean whitespaceSkipped = false;
+        if(parser.getEventType() == XmlPullParser.TEXT)
+        {
+            while(parser.isWhitespace())
+            {
+                parser.next();
+                whitespaceSkipped = true;
+            }
+        }
+
+        return whitespaceSkipped;
+    }
+
+    private boolean isStartTag(XmlPullParser parser,String tagname) throws XmlPullParserException, IOException
+    {
+        return parser.getEventType() == XmlPullParser.START_TAG && parser.getName().equals(tagname);
+    }
+
+    private boolean isEndTag(XmlPullParser parser,String tagname) throws XmlPullParserException, IOException
+    {
+        return parser.getEventType() == XmlPullParser.END_TAG && parser.getName().equals(tagname);
     }
 
     private void skip(XmlPullParser parser) throws XmlPullParserException, IOException

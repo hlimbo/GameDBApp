@@ -64,7 +64,7 @@ public class SearchActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response)
                     {
-                       // Log.d("RESPONSE",response);
+                        Log.d("RESPONSE",response);
                         SearchXMLParser searchParser = new SearchXMLParser();
                         Intent intent = new Intent(context,SearchableActivity.class);
 
