@@ -22,10 +22,12 @@ public class SearchableActivity extends ListActivity {
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        //ArrayList<? extends Parcelable> searchResults = bundle.getParcelableArrayList(SearchActivity.SEARCH);
+        ArrayList<? extends Parcelable> searchResults = bundle.getParcelableArrayList(SearchActivity.SEARCH);
+
+        Integer size = searchResults.size();
+        Toast.makeText(this,"Search Results Size: " + size, Toast.LENGTH_LONG).show();
 
         //display search results
-        //Integer size = searchResults.size();
-        //Toast.makeText(this,"Search Results Size: " + size, Toast.LENGTH_LONG).show();
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,searchResults);
     }
 }

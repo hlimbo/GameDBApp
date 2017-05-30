@@ -84,7 +84,7 @@ public class SearchActivity extends AppCompatActivity {
 
                             //TODO(HARVEY): store List in a bundle which searchable_activity can access later.
                             //might cause a null reference exception and crash the app....
-                            //intent.putParcelableArrayListExtra(SEARCH, (ArrayList<? extends Parcelable>) contents);
+                            intent.putParcelableArrayListExtra(SEARCH, (ArrayList<? extends Parcelable>) contents);
                             startActivity(intent);
                         }
                         catch(XmlPullParserException e)
