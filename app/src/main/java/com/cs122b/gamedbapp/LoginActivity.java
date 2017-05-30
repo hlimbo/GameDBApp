@@ -2,6 +2,7 @@ package com.cs122b.gamedbapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -33,10 +34,24 @@ import XMLParser.LoginXMLParser;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private SharedPreferences mPrefs;
+
+    private EditText emailText;
+    private EditText passwordText;
+    private TextView errorView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        emailText = (EditText) this.findViewById(R.id.email);
+        passwordText = (EditText) this.findViewById(R.id.password);
+        errorView = (TextView) this.findViewById(R.id.textView);
+
+        mPrefs = this.getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE);
+
+
     }
 
     //Used when Login button is tapped
@@ -45,10 +60,6 @@ public class LoginActivity extends AppCompatActivity {
         //hide keyboard on login button press
         InputMethodManager inputManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
-
-        final EditText emailText = (EditText) this.findViewById(R.id.email);
-        final EditText passwordText = (EditText) this.findViewById(R.id.password);
-        final TextView errorView = (TextView) this.findViewById(R.id.textView);
 
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
