@@ -1,8 +1,10 @@
 package com.cs122b.gamedbapp;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -51,7 +53,22 @@ public class LoginActivity extends AppCompatActivity {
 
         mPrefs = this.getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE);
 
+        //if an email was typed in previously store that value when creating this new process.
+        String email = mPrefs.getString(getString(R.string.preference_file_key),"");
+        Log.d("Retrieve", email);
+        emailText.setText(email);
+    }
 
+    @Override
+    public void onBackPressed()
+    {
+        Log.d("BACKPRESSED", emailText.getText().toString());
+
+        SharedPreferences.Editor editor = mPrefs.edit();
+        editor.putString(getString(R.string.preference_file_key), emailText.getText().toString());
+        editor.commit();
+
+        super.onBackPressed();
     }
 
     //Used when Login button is tapped
