@@ -2,6 +2,7 @@ package com.cs122b.gamedbapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
@@ -34,7 +35,15 @@ public class SearchActivity extends AppCompatActivity {
     public static final String SEARCH_COUNT = "SearchCount";
     public static final String SEARCH_OFFSET = "SearchOffset";
     public static final String SEARCH_QUERY = "SearchQuery";
+
     private TextView errorView;
+    private EditText searchText;
+
+    private SharedPreferences mPrefs;
+
+    //search query
+    private String name;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,16 +51,33 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         errorView = (TextView) this.findViewById(R.id.searchErrorView);
         errorView.setText("");
+
+        searchText = (EditText) this.findViewById(R.id.searchText);
+
+        mPrefs = this.getSharedPreferences(getString(R.string.search_preference_file_key),Context.MODE_PRIVATE);
+
+        //if a search query was typed in previously, get that value when creating this new process
+        String searchQuery = mPrefs.getString(getString(R.string.search_preference_file_key),"");
+        searchText.setText(searchQuery);
     }
+
+    @Override
+    public void onBackPressed()
+    {
+        SharedPreferences.Editor editor = mPrefs.edit();
+        editor.putString(getString(R.string.search_preference_file_key),searchText.getText().toString());
+        editor.commit();
+
+        super.onBackPressed();
+    }
+
 
     public void onSearchClick(View view)
     {
-        final EditText searchText = (EditText) this.findViewById(R.id.searchText);
-
         //used to return a specific xml format
         Integer match = 3;
         //game to search for
-        final String name = searchText.getText().toString().replaceAll("\\s","+");
+        name = searchText.getText().toString().replaceAll("\\s","+");
         //MYSQL offset used for pagination
         Integer offset = 0;
         //search results limit per page

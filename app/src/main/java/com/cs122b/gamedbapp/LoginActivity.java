@@ -53,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
 
         mPrefs = this.getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE);
 
-        //if an email was typed in previously store that value when creating this new process.
+        //if an email was typed in previously get that value when creating this new process.
         String email = mPrefs.getString(getString(R.string.preference_file_key),"");
         Log.d("Retrieve", email);
         emailText.setText(email);
@@ -69,6 +69,17 @@ public class LoginActivity extends AppCompatActivity {
         editor.commit();
 
         super.onBackPressed();
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        //delete stored email when shutting down the app.
+       // SharedPreferences.Editor editor = mPrefs.edit();
+       // editor.remove(getString(R.string.preference_file_key));
+       // editor.commit();
+
+        super.onDestroy();
     }
 
     //Used when Login button is tapped
