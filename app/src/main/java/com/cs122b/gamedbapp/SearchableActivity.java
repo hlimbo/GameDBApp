@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -32,9 +33,18 @@ public class SearchableActivity extends ListActivity {
         Integer size = searchResults.size();
         Toast.makeText(this,"Search Results Size: " + size, Toast.LENGTH_LONG).show();
 
-        //display search results
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getListView().getContext(), android.R.layout.simple_list_item_1, list);
-        getListView().setAdapter(adapter);
+        ListView listView = getListView();
+        if(size != 0)
+        {
+            //display search results
+            listView.setVisibility(View.VISIBLE);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(listView.getContext(), android.R.layout.simple_list_item_1, list);
+            listView.setAdapter(adapter);
+        }
+        else
+        {
+            listView.setVisibility(View.INVISIBLE);
+        }
 
 
     }
