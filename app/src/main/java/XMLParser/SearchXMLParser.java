@@ -42,7 +42,79 @@ public class SearchXMLParser
 
     }
 
-    //TODO(HARVEY): handle xml parsing up to 4 levels of depth to access game name.
+    public String getSearchCount(String xmlString) throws XmlPullParserException, IOException
+    {
+
+        String searchCount = "";
+        //convert xmlString output to InputStream object
+        InputStream in = new ByteArrayInputStream(xmlString.getBytes(Charset.forName("UTF-8")));
+
+        try {
+            XmlPullParser parser = Xml.newPullParser();
+            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+            parser.setInput(in, null);
+            parser.nextTag();
+            while(parser.next() != XmlPullParser.END_DOCUMENT)
+            {
+                if(parser.getEventType() == XmlPullParser.START_TAG)
+                {
+                    if(parser.getName().equals("searchCount"))
+                    {
+                        if(parser.next() == XmlPullParser.TEXT)
+                            if(parser.getText() != null)
+                            {
+                                searchCount = parser.getText();
+                                break;
+                            }
+                    }
+                }
+            }
+
+        } finally {
+            in.close();
+        }
+
+        return searchCount;
+    }
+
+    public String getSearchOffset(String xmlString) throws XmlPullParserException, IOException
+    {
+
+        String searchOffset = "";
+        //convert xmlString output to InputStream object
+        InputStream in = new ByteArrayInputStream(xmlString.getBytes(Charset.forName("UTF-8")));
+
+        try {
+            XmlPullParser parser = Xml.newPullParser();
+            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+            parser.setInput(in, null);
+            parser.nextTag();
+            while(parser.next() != XmlPullParser.END_DOCUMENT)
+            {
+                if(parser.getEventType() == XmlPullParser.START_TAG)
+                {
+                    if(parser.getName().equals("searchOffset"))
+                    {
+                        if(parser.next() == XmlPullParser.TEXT)
+                            if(parser.getText() != null)
+                            {
+                                searchOffset = parser.getText();
+                                break;
+                            }
+                    }
+                }
+            }
+
+        } finally {
+            in.close();
+        }
+
+        return searchOffset;
+    }
+
+
+
+    //Search Structure -- I need to do this because <atext> tag can also be a name of a platform/publisher e.g. <atext>Nintendo</atext>
     //<search_results>
     //      <row class="games_row">
     //          <field class="games_name">

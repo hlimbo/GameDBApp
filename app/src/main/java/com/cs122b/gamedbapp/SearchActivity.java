@@ -30,6 +30,10 @@ import constants.constants;
 public class SearchActivity extends AppCompatActivity {
 
     public final static String SEARCH = "SearchResults";
+    public final static String LIMIT = "LIMIT";
+    public static final String SEARCH_COUNT = "SearchCount";
+    public static final String SEARCH_OFFSET = "SearchOffset";
+    public static final String SEARCH_QUERY = "SearchQuery";
     private TextView errorView;
 
     @Override
@@ -45,17 +49,17 @@ public class SearchActivity extends AppCompatActivity {
         final EditText searchText = (EditText) this.findViewById(R.id.searchText);
 
         //used to return a specific xml format
-        Integer match = 1;
+        Integer match = 3;
         //game to search for
         final String name = searchText.getText().toString().replaceAll("\\s","+");
         //MYSQL offset used for pagination
         Integer offset = 0;
         //search results limit per page
-        //Integer limit = 50;
+        final Integer limit = 50;
 
         String base_url = "http://" + constants.IP + ":" + constants.HTTP_PORT;
         String path = "/search/xquery";
-        String full_url = base_url + path + "?match=" + match + "&name=" + name + "&offset=" + offset + "&limit=";// + limit;
+        String full_url = base_url + path + "?match=" + match + "&name=" + name + "&offset=" + offset + "&limit=" + limit;
 
         final Context context = this;
         RequestQueue queue = Volley.newRequestQueue(context);
@@ -83,6 +87,8 @@ public class SearchActivity extends AppCompatActivity {
                             if(!name.isEmpty())
                             {
                                 List contents = searchParser.parse(response);
+                                Integer searchCount =  Integer.parseInt(searchParser.getSearchCount(response));
+                                Integer searchOffset = Integer.parseInt(searchParser.getSearchOffset(response));
 
                                 //DEBUG
                                 for(Integer i = 0;i < contents.size();++i)
@@ -90,12 +96,19 @@ public class SearchActivity extends AppCompatActivity {
                                     Log.d("RESPONSE" + i,contents.get(i).toString());
                                 }
 
+                                Log.d("SEARCH_COUNT", searchCount.toString());
+                                Log.d("LIMIT", limit.toString());
+
                                 if(contents.isEmpty())
                                 {
                                     Log.d("RESPONSEE", "contents is empty");
                                 }
 
                                 intent.putParcelableArrayListExtra(SEARCH, (ArrayList<? extends Parcelable>) contents);
+                                intent.putExtra(LIMIT, limit);
+                                intent.putExtra(SEARCH_COUNT,searchCount);
+                                intent.putExtra(SEARCH_OFFSET,searchOffset);
+                                intent.putExtra(SEARCH_QUERY,name);
                                 startActivity(intent);
                             }
 
