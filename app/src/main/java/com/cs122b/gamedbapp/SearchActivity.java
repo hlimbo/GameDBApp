@@ -22,6 +22,9 @@ import com.android.volley.toolbox.Volley;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,9 +80,17 @@ public class SearchActivity extends AppCompatActivity {
         //used to return a specific xml format
         Integer match = 3;
         //game to search for Note: %2B is the plus sign (+) value read in html
-        name = searchText.getText().toString().replaceAll("\\s","%2B");
+        //name = searchText.getText().toString().replaceAll("\\s","%2B");
         //Note: this ensures that whitespaces entered into the query aren't considered as valid searches.
+        //name = name.trim();
+        try {
+            name = URLEncoder.encode(searchText.getText().toString(), "UTF-8");
+        } catch(UnsupportedEncodingException e)
+        {
+            Log.d("encodingexception",e.getMessage());
+        }
         name = name.trim();
+
         //MYSQL offset used for pagination
         Integer offset = 0;
         //search results limit per page
