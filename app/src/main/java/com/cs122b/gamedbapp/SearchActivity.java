@@ -47,7 +47,6 @@ public class SearchActivity extends AppCompatActivity {
     //search query
     private String name;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,15 +80,17 @@ public class SearchActivity extends AppCompatActivity {
         Integer match = 3;
         //game to search for Note: %2B is the plus sign (+) value read in html
         //name = searchText.getText().toString().replaceAll("\\s","%2B");
+
         //Note: this ensures that whitespaces entered into the query aren't considered as valid searches.
-        //name = name.trim();
-        try {
-            name = URLEncoder.encode(searchText.getText().toString(), "UTF-8");
+        name = searchText.getText().toString().trim();
+
+        try {//Note: encoder handles all invalid characters passed into search text box.
+            if(!name.isEmpty())
+                name = URLEncoder.encode(searchText.getText().toString(), "UTF-8");
         } catch(UnsupportedEncodingException e)
         {
             Log.d("encodingexception",e.getMessage());
         }
-        name = name.trim();
 
         //MYSQL offset used for pagination
         Integer offset = 0;
@@ -111,71 +112,63 @@ public class SearchActivity extends AppCompatActivity {
         if(name.isEmpty())
         {
             errorView.setText("Please type in a game title to search for");
+            //Note: used to reset text back to blank if multiple whitespace was entered in as a query
+            searchText.setText("");
         }
+        else
+        {
+            StringRequest postRequest = new StringRequest(Request.Method.GET, full_url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.d("RESPONSE", response);
+                            SearchXMLParser searchParser = new SearchXMLParser();
+                            Intent intent = new Intent(context, SearchableActivity.class);
 
-        StringRequest postRequest = new StringRequest(Request.Method.GET, full_url,
-                new Response.Listener<String>()
-                {
-                    @Override
-                    public void onResponse(String response)
-                    {
-                        Log.d("RESPONSE",response);
-                        SearchXMLParser searchParser = new SearchXMLParser();
-                        Intent intent = new Intent(context,SearchableActivity.class);
+                            try {
+                                //if there was something typed into the search bar perform a search.
+                                if (!name.isEmpty()) {
+                                    List contents = searchParser.parse(response);
+                                    Integer searchCount = Integer.parseInt(searchParser.getSearchCount(response));
+                                    Integer searchOffset = Integer.parseInt(searchParser.getSearchOffset(response));
 
-                        try
-                        {
-                            //if there was something typed into the search bar perform a search.
-                            if(!name.isEmpty())
-                            {
-                                List contents = searchParser.parse(response);
-                                Integer searchCount =  Integer.parseInt(searchParser.getSearchCount(response));
-                                Integer searchOffset = Integer.parseInt(searchParser.getSearchOffset(response));
+                                    //DEBUG
+                                    for (Integer i = 0; i < contents.size(); ++i) {
+                                        Log.d("RESPONSE" + i, contents.get(i).toString());
+                                    }
 
-                                //DEBUG
-                                for(Integer i = 0;i < contents.size();++i)
-                                {
-                                    Log.d("RESPONSE" + i,contents.get(i).toString());
+                                    Log.d("SEARCH_COUNT", searchCount.toString());
+                                    Log.d("LIMIT", limit.toString());
+
+                                    if (contents.isEmpty()) {
+                                        Log.d("RESPONSEE", "contents is empty");
+                                    }
+
+                                    intent.putParcelableArrayListExtra(SEARCH, (ArrayList<? extends Parcelable>) contents);
+                                    intent.putExtra(LIMIT, limit);
+                                    intent.putExtra(SEARCH_COUNT, searchCount);
+                                    intent.putExtra(SEARCH_OFFSET, searchOffset);
+                                    intent.putExtra(SEARCH_QUERY, name);
+                                    startActivity(intent);
                                 }
 
-                                Log.d("SEARCH_COUNT", searchCount.toString());
-                                Log.d("LIMIT", limit.toString());
-
-                                if(contents.isEmpty())
-                                {
-                                    Log.d("RESPONSEE", "contents is empty");
-                                }
-
-                                intent.putParcelableArrayListExtra(SEARCH, (ArrayList<? extends Parcelable>) contents);
-                                intent.putExtra(LIMIT, limit);
-                                intent.putExtra(SEARCH_COUNT,searchCount);
-                                intent.putExtra(SEARCH_OFFSET,searchOffset);
-                                intent.putExtra(SEARCH_QUERY,name);
-                                startActivity(intent);
+                            } catch (XmlPullParserException e) {
+                                Log.d("XMLEXCEPTION:", e.getMessage());
+                            } catch (IOException e) {
+                                Log.d("IOEXCEPTION:", e.getMessage());
                             }
-
                         }
-                        catch(XmlPullParserException e)
-                        {
-                            Log.d("XMLEXCEPTION:", e.getMessage());
-                        }
-                        catch(IOException e)
-                        {
-                            Log.d("IOEXCEPTION:", e.getMessage());
+                    },
+                    new Response.ErrorListener() {
+                        //used typically if web server is down.
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.d("SECURITY.ERROR", error.toString());
                         }
                     }
-                },
-                new Response.ErrorListener()
-                {
-                    //used typically if web server is down.
-                    @Override
-                    public void onErrorResponse(VolleyError error)
-                    {
-                        Log.d("SECURITY.ERROR",error.toString());
-                    }
-                }
-                );
+            );
 
-        queue.add(postRequest);
+            queue.add(postRequest);
+        }
     }
 }
