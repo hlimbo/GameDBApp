@@ -126,6 +126,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
                             else//otherwise go to success page
                             {
+                                errorView.setText("");
                                 startActivity(intent);
                             }
 
