@@ -76,12 +76,17 @@ public class SearchActivity extends AppCompatActivity {
     {
         //used to return a specific xml format
         Integer match = 3;
-        //game to search for
-        name = searchText.getText().toString().replaceAll("\\s","+");
+        //game to search for Note: %2B is the plus sign (+) value read in html
+        name = searchText.getText().toString().replaceAll("\\s","%2B");
+        //Note: this ensures that whitespaces entered into the query aren't considered as valid searches.
+        name = name.trim();
         //MYSQL offset used for pagination
         Integer offset = 0;
         //search results limit per page
         final Integer limit = 25;
+
+        Integer length = name.length();
+        Log.d("NAMELEN",length.toString());
 
         String base_url = "http://" + constants.IP + ":" + constants.HTTP_PORT;
         String path = "/search/xquery";
