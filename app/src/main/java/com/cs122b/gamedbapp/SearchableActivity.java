@@ -82,7 +82,7 @@ public class SearchableActivity extends ListActivity {
         TextView pageView = (TextView)this.findViewById(R.id.pageView);
 
         //note will return 0 if mapping not found, which is what we want when we first go to the search results page.
-        pageIndex = bundle.getInt("PAGE");
+        pageIndex = searchOffset / resultsPerPage;//bundle.getInt("PAGE");
         //used for going back a page. Note: 0 if the transition happened from search view to search results page, otherwise it should be a non-zero number if it was from search results page to search results page.
         remainingForPrevious = bundle.getInt("REMAINING");
         size = searchResults.size();
@@ -95,7 +95,7 @@ public class SearchableActivity extends ListActivity {
         if(!searchResults.isEmpty())
         {
             Integer pageNumber = pageIndex + 1;
-            pageView.setText("Page: " + pageNumber.toString());
+            pageView.setText("Page: " + pageNumber.toString() + "/" + pages.toString());
 
             //display search results
             listView.setVisibility(View.VISIBLE);

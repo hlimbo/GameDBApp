@@ -81,7 +81,7 @@ public class SearchActivity extends AppCompatActivity {
         //MYSQL offset used for pagination
         Integer offset = 0;
         //search results limit per page
-        final Integer limit = 50;
+        final Integer limit = 25;
 
         String base_url = "http://" + constants.IP + ":" + constants.HTTP_PORT;
         String path = "/search/xquery";
